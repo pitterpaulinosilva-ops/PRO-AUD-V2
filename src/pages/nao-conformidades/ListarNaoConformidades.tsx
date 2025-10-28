@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Search, Eye, Edit2, AlertOctagon, CheckCircle2, Clock } from 'lucide-react';
+import { formatDate, getStatusLabel } from '@/utils/formatters';
+import { STATUS_COLORS, NC_TIPO_OPTIONS, NC_STATUS_OPTIONS } from '@/utils/constants';
 
 export function ListarNaoConformidades() {
   const navigate = useNavigate();
@@ -77,8 +79,6 @@ export function ListarNaoConformidades() {
     
     return matchTexto && matchStatus && matchTipo;
   });
-
-
 
   const getTipoBadge = (tipo: string) => {
     return tipo === 'nao_conformidade' 
@@ -172,10 +172,11 @@ export function ListarNaoConformidades() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos os Status</SelectItem>
-                <SelectItem value="aberta">Aberta</SelectItem>
-                <SelectItem value="em_andamento">Em Andamento</SelectItem>
-                <SelectItem value="fechada">Fechada</SelectItem>
+                {NC_STATUS_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={filtroTipo} onValueChange={setFiltroTipo}>
@@ -183,9 +184,11 @@ export function ListarNaoConformidades() {
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos os Tipos</SelectItem>
-                <SelectItem value="nao_conformidade">Não Conformidade</SelectItem>
-                <SelectItem value="plano_correcao">Plano de Correção</SelectItem>
+                {NC_TIPO_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -209,21 +212,16 @@ export function ListarNaoConformidades() {
                         {tipoBadge.label}
                       </Badge>
                       <Badge
-                        variant={
-                          nc.status === 'Resolvida'
-                            ? 'default'
-                            : nc.status === 'Em Análise'
-                            ? 'secondary'
-                            : 'destructive'
-                        }
+                        variant="secondary"
+                        className={STATUS_COLORS[nc.status as keyof typeof STATUS_COLORS]}
                       >
-                        {nc.status}
+                        {getStatusLabel(nc.status)}
                       </Badge>
                       <Badge
                           variant={
-                            nc.criticidade === 'Alta'
+                            nc.criticidade === 'alta'
                               ? 'destructive'
-                              : nc.criticidade === 'Média'
+                              : nc.criticidade === 'media'
                               ? 'secondary'
                               : 'outline'
                           }
@@ -270,7 +268,7 @@ export function ListarNaoConformidades() {
                   <div>
                     <label className="text-xs font-medium text-muted-foreground">Prazo</label>
                     <p className={`text-sm ${isVencida ? 'text-red-600 font-medium' : ''}`}>
-                      {new Date(nc.prazo).toLocaleDateString('pt-BR')}
+                      {formatDate(nc.prazo)}
                     </p>
                   </div>
                 </div>

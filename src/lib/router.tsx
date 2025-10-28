@@ -5,6 +5,7 @@ import { Login } from '@/pages/Login';
 import { ListarAuditorias } from '@/pages/auditorias/ListarAuditorias';
 import { CadastrarAuditoria } from '@/pages/auditorias/CadastrarAuditoria';
 import { DetalhesAuditoria } from '@/pages/auditorias/DetalhesAuditoria';
+import { ResultadoAuditoria } from '@/pages/auditorias/ResultadoAuditoria';
 import { ExecucaoAuditoria } from '@/pages/execucao/ExecucaoAuditoria';
 import { ListarExecucaoAuditorias } from '@/pages/execucao/ListarExecucaoAuditorias';
 import { ListarChecklists } from '@/pages/checklists/ListarChecklists';
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
       {
         path: 'auditorias/:id',
         element: <DetalhesAuditoria />,
+      },
+      {
+        path: 'auditorias/resultado/:id',
+        element: <ResultadoAuditoria />,
       },
       {
         path: 'execucao',

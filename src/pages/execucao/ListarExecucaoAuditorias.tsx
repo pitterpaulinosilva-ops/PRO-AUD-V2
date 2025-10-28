@@ -29,6 +29,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { formatDate, getStatusLabel, getPrioridadeLabel } from '@/utils/formatters';
+import { STATUS_COLORS, PRIORIDADE_COLORS, STATUS_AUDITORIA_OPTIONS, PRIORIDADE_OPTIONS } from '@/utils/constants';
 
 // Dados mockados para auditorias disponíveis para execução
 const auditoriasDisponiveis = [
@@ -70,19 +72,6 @@ const auditoriasDisponiveis = [
   }
 ];
 
-const statusColors = {
-  planejada: 'bg-blue-100 text-blue-800',
-  em_andamento: 'bg-yellow-100 text-yellow-800',
-  concluida: 'bg-green-100 text-green-800',
-  cancelada: 'bg-red-100 text-red-800'
-};
-
-const prioridadeColors = {
-  alta: 'bg-red-100 text-red-800',
-  media: 'bg-yellow-100 text-yellow-800',
-  baixa: 'bg-green-100 text-green-800'
-};
-
 export function ListarExecucaoAuditorias() {
   const [auditorias] = useState(auditoriasDisponiveis);
   const [searchTerm, setSearchTerm] = useState('');
@@ -101,29 +90,6 @@ export function ListarExecucaoAuditorias() {
     
     return matchesSearch && matchesStatus && matchesPrioridade;
   });
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      planejada: 'Planejada',
-      em_andamento: 'Em Andamento',
-      concluida: 'Concluída',
-      cancelada: 'Cancelada'
-    };
-    return labels[status as keyof typeof labels] || status;
-  };
-
-  const getPrioridadeLabel = (prioridade: string) => {
-    const labels = {
-      alta: 'Alta',
-      media: 'Média',
-      baixa: 'Baixa'
-    };
-    return labels[prioridade as keyof typeof labels] || prioridade;
-  };
 
   const handleExecutarAuditoria = (id: string) => {
     navigate(`/execucao/${id}`);
@@ -179,10 +145,11 @@ export function ListarExecucaoAuditorias() {
                 <SelectValue placeholder="Prioridade" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todas as Prioridades</SelectItem>
-                <SelectItem value="alta">Alta</SelectItem>
-                <SelectItem value="media">Média</SelectItem>
-                <SelectItem value="baixa">Baixa</SelectItem>
+                {PRIORIDADE_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -223,7 +190,7 @@ export function ListarExecucaoAuditorias() {
           <CardContent className="p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-muted-foreground">Prioridade Alta</p>
+                <p className="text-sm font-medium text-muted-foreground">Alta Prioridade</p>
                 <p className="text-2xl font-bold">
                   {auditorias.filter(a => a.prioridade === 'alta').length}
                 </p>
@@ -239,7 +206,7 @@ export function ListarExecucaoAuditorias() {
         <CardHeader>
           <CardTitle>Auditorias Disponíveis</CardTitle>
           <CardDescription>
-            {auditoriasFiltradas.length} auditoria(s) encontrada(s)
+            {auditoriasFiltradas.length} auditoria(s) disponível(is) para execução
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -250,9 +217,8 @@ export function ListarExecucaoAuditorias() {
                   <TableHead>Auditoria</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Prioridade</TableHead>
-                  <TableHead>Auditor</TableHead>
-                  <TableHead>Setor</TableHead>
                   <TableHead>Data Programada</TableHead>
+                  <TableHead>Auditor Líder</TableHead>
                   <TableHead>Progresso</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -263,59 +229,52 @@ export function ListarExecucaoAuditorias() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{auditoria.titulo}</p>
-                        <p className="text-sm text-muted-foreground">{auditoria.checklist}</p>
+                        <p className="text-sm text-muted-foreground">{auditoria.setor} • {auditoria.checklist}</p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          auditoria.status === 'em_andamento'
-                            ? 'secondary'
-                            : 'outline'
-                        }
-                        className={statusColors[auditoria.status as keyof typeof statusColors]}
+                      <Badge 
+                        variant="secondary"
+                        className={STATUS_COLORS[auditoria.status as keyof typeof STATUS_COLORS]}
                       >
                         {getStatusLabel(auditoria.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={prioridadeColors[auditoria.prioridade as keyof typeof prioridadeColors]}
+                      <Badge 
+                        variant="secondary"
+                        className={PRIORIDADE_COLORS[auditoria.prioridade as keyof typeof PRIORIDADE_COLORS]}
                       >
                         {getPrioridadeLabel(auditoria.prioridade)}
                       </Badge>
                     </TableCell>
-                    <TableCell>{auditoria.auditor_lider}</TableCell>
-                    <TableCell>{auditoria.setor}</TableCell>
                     <TableCell>{formatDate(auditoria.data_programada)}</TableCell>
+                    <TableCell>{auditoria.auditor_lider}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
                             style={{ width: `${auditoria.progresso}%` }}
-                          />
+                          ></div>
                         </div>
-                        <span className="text-sm text-muted-foreground">
-                          {auditoria.progresso}%
-                        </span>
+                        <span className="text-sm font-medium">{auditoria.progresso}%</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center gap-2 justify-end">
                         <Button
                           size="sm"
                           onClick={() => handleExecutarAuditoria(auditoria.id)}
                           className="bg-green-600 hover:bg-green-700"
                         >
                           <Play className="mr-2 h-4 w-4" />
-                          {auditoria.status === 'em_andamento' ? 'Continuar' : 'Iniciar'}
+                          {auditoria.status === 'planejada' ? 'Iniciar' : 'Continuar'}
                         </Button>
-                        
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Abrir menu</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>

@@ -32,6 +32,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Auditoria, Setor } from '@/types';
+import { formatDate, getStatusLabel, getTipoLabel } from '@/utils/formatters';
+import { STATUS_COLORS, TIPO_COLORS, STATUS_AUDITORIA_OPTIONS, TIPO_AUDITORIA_OPTIONS } from '@/utils/constants';
 
 // Dados mockados
 // Tipo estendido para o mock com propriedades adicionais para a UI
@@ -182,13 +184,6 @@ const auditoriasMock: AuditoriaMock[] = [
 
 
 
-const tipoColors = {
-  interna: 'bg-gray-100 text-gray-800',
-  externa: 'bg-purple-100 text-purple-800',
-  certificacao: 'bg-orange-100 text-orange-800',
-  fornecedor: 'bg-indigo-100 text-indigo-800'
-};
-
 export function ListarAuditorias() {
   const [auditorias, setAuditorias] = useState<AuditoriaMock[]>(auditoriasMock);
   const [searchTerm, setSearchTerm] = useState('');
@@ -210,30 +205,6 @@ export function ListarAuditorias() {
 
   const handleDelete = (id: string) => {
     setAuditorias(prev => prev.filter(auditoria => auditoria.id !== id));
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      planejada: 'Planejada',
-      em_andamento: 'Em Andamento',
-      concluida: 'Concluída',
-      cancelada: 'Cancelada'
-    };
-    return labels[status as keyof typeof labels] || status;
-  };
-
-  const getTipoLabel = (tipo: string) => {
-    const labels = {
-      interna: 'Interna',
-      externa: 'Externa',
-      certificacao: 'Certificação',
-      fornecedor: 'Fornecedor'
-    };
-    return labels[tipo as keyof typeof labels] || tipo;
   };
 
   return (
@@ -279,11 +250,11 @@ export function ListarAuditorias() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos os Status</SelectItem>
-                <SelectItem value="planejada">Planejada</SelectItem>
-                <SelectItem value="em_andamento">Em Andamento</SelectItem>
-                <SelectItem value="concluida">Concluída</SelectItem>
-                <SelectItem value="cancelada">Cancelada</SelectItem>
+                {STATUS_AUDITORIA_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -292,11 +263,11 @@ export function ListarAuditorias() {
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos os Tipos</SelectItem>
-                <SelectItem value="interna">Interna</SelectItem>
-                <SelectItem value="externa">Externa</SelectItem>
-                <SelectItem value="certificacao">Certificação</SelectItem>
-                <SelectItem value="fornecedor">Fornecedor</SelectItem>
+                {TIPO_AUDITORIA_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -395,20 +366,15 @@ export function ListarAuditorias() {
                     <TableCell>
                       <Badge 
                         variant="secondary" 
-                        className={tipoColors[auditoria.tipo as keyof typeof tipoColors]}
+                        className={TIPO_COLORS[auditoria.tipo as keyof typeof TIPO_COLORS]}
                       >
                         {getTipoLabel(auditoria.tipo)}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          auditoria.status === 'concluida'
-                            ? 'default'
-                            : auditoria.status === 'em_andamento'
-                            ? 'secondary'
-                            : 'outline'
-                        }
+                      <Badge 
+                        variant="secondary" 
+                        className={STATUS_COLORS[auditoria.status as keyof typeof STATUS_COLORS]}
                       >
                         {getStatusLabel(auditoria.status)}
                       </Badge>
@@ -417,82 +383,52 @@ export function ListarAuditorias() {
                     <TableCell>{auditoria.setor.nome}</TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <p>{formatDate(auditoria.data_inicio)}</p>
-                        <p className="text-muted-foreground">até {formatDate(auditoria.data_fim)}</p>
+                        <p>{formatDate(auditoria.data_inicio)} - {formatDate(auditoria.data_fim)}</p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-500 h-2 rounded-full"
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
                             style={{ width: `${auditoria.progresso}%` }}
-                          />
+                          ></div>
                         </div>
-                        <span className="text-sm">{auditoria.progresso}%</span>
+                        <span className="text-sm font-medium">{auditoria.progresso}%</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate(`/auditorias/${auditoria.id}`)}
-                          className="transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        >
-                          <Eye className="h-4 w-4 transition-all duration-200 ease-in-out" />
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0 transition-all duration-200 ease-in-out hover:scale-105 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                              <MoreHorizontal className="h-4 w-4 transition-all duration-200 ease-in-out" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/auditorias/${auditoria.id}/editar`)}>
-                              <Edit2 className="mr-2 h-4 w-4 transition-all duration-200 ease-in-out" />
-                              Editar
-                            </DropdownMenuItem>
-                            {auditoria.status === 'planejada' && (
-                              <DropdownMenuItem onClick={() => navigate(`/execucao/${auditoria.id}`)}>
-                                <CalendarDays className="mr-2 h-4 w-4 transition-all duration-200 ease-in-out" />
-                                Executar
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem 
-                              onClick={() => handleDelete(auditoria.id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4 transition-all duration-200 ease-in-out" />
-                              Excluir
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Abrir menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => navigate(`/auditorias/${auditoria.id}`)}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            Visualizar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/auditorias/${auditoria.id}/editar`)}>
+                            <Edit2 className="mr-2 h-4 w-4" />
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDelete(auditoria.id)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
-
-          {auditoriasFiltradas.length === 0 && (
-            <div className="text-center py-8">
-              <FileText className="mx-auto h-12 w-12 text-gray-400 transition-all duration-200 ease-in-out hover:scale-105" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                Nenhuma auditoria encontrada
-              </h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Tente ajustar os filtros ou criar uma nova auditoria.
-              </p>
-              <div className="mt-6">
-                <Button onClick={() => navigate('/auditorias/nova')} className="transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                  <Plus className="mr-2 h-4 w-4 transition-all duration-200 ease-in-out" />
-                  Nova Auditoria
-                </Button>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

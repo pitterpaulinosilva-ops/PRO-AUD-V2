@@ -95,10 +95,6 @@ export function Dashboard() {
             Visão geral das auditorias e conformidades
           </p>
         </div>
-        <Button className="transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-          <CalendarPlus className="mr-2 h-4 w-4 transition-all duration-200 ease-in-out" />
-          Nova Auditoria
-        </Button>
       </div>
 
       {/* KPIs Principais */}

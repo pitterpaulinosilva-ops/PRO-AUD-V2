@@ -23,6 +23,8 @@ import {
   Upload
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+// Importar dados mockados
+import { normas, categorias } from '@/data/mockData';
 
 // Schema para pergunta individual
 const perguntaSchema = z.object({
@@ -52,27 +54,6 @@ const checklistSchema = z.object({
 
 type ChecklistForm = z.infer<typeof checklistSchema>;
 type PerguntaForm = z.infer<typeof perguntaSchema>;
-
-// Dados mockados
-const normas = [
-  { id: '1', nome: 'ISO 9001:2015 - Gestão da Qualidade' },
-  { id: '2', nome: 'ISO 14001:2015 - Gestão Ambiental' },
-  { id: '3', nome: 'ISO 45001:2018 - Saúde e Segurança' },
-  { id: '4', nome: 'ISO 27001:2013 - Segurança da Informação' }
-];
-
-const categorias = [
-  'Gestão de Processos',
-  'Documentação',
-  'Recursos Humanos',
-  'Infraestrutura',
-  'Monitoramento',
-  'Melhoria Contínua',
-  'Controle de Qualidade',
-  'Segurança',
-  'Meio Ambiente',
-  'Tecnologia da Informação'
-];
 
 const tiposPergunta = [
   { value: 'sim_nao', label: 'Sim/Não', icon: CheckSquare },
@@ -155,12 +136,27 @@ export function CadastrarChecklist() {
   const onSubmit = async (data: ChecklistForm) => {
     setIsLoading(true);
     
-    // Simular salvamento
-    setTimeout(() => {
-      console.log('Novo checklist:', data);
+    try {
+      // Criar checklist com dados atualizados
+      const novoChecklist = {
+        ...data,
+        id: `checklist_${Date.now()}`,
+        status: 'ativo' as const,
+        dataCreacao: new Date().toISOString().split('T')[0],
+        ultimaAtualizacao: new Date().toISOString().split('T')[0]
+      };
+      
+      // Salvar usando a função do mockData
+      const { salvarChecklist } = await import('@/data/mockData');
+      salvarChecklist(novoChecklist);
+      
+      console.log('Novo checklist salvo:', novoChecklist);
       setIsLoading(false);
       navigate('/checklists');
-    }, 1000);
+    } catch (error) {
+      console.error('Erro ao salvar checklist:', error);
+      setIsLoading(false);
+    }
   };
 
   const getTipoIcon = (tipo: string) => {
@@ -502,7 +498,7 @@ export function CadastrarChecklist() {
                           {tipoPergunta === 'multipla_escolha' && (
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
-                                <FormLabel>Opções de Resposta</FormLabel>
+                                <label className="text-sm font-medium">Opções de Resposta</label>
                                 <Button
                                   type="button"
                                   variant="outline"

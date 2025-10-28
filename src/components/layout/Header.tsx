@@ -6,7 +6,7 @@ export function Header() {
   const { toggle, isDesktop, isCollapsed, isOpen } = useSidebar();
 
   return (
-    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+    <div className="sticky top-0 z-40 flex h-24 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
       {/* Toggle button - responsive behavior */}
       <button
         type="button"
@@ -39,6 +39,19 @@ export function Header() {
 
       {/* Separator - only show on mobile/tablet */}
       <div className="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
+
+      {/* Logo AuditaPro V2 - Aumentada significativamente */}
+      <div className="flex items-center">
+        <img 
+          src="https://i.imgur.com/14y40vt.png" 
+          alt="AuditaPro V2" 
+          className="h-20 w-auto object-contain transition-all duration-200 ease-in-out hover:scale-105 sm:h-16 md:h-18 lg:h-20"
+          onError={(e) => {
+            // Fallback para caso a imagem não carregue
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+      </div>
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
         <div className="flex flex-1" />
