@@ -30,7 +30,7 @@ import {
   CheckSquare
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { carregarChecklists, deletarChecklist, salvarChecklist, normas, categorias, inicializarDadosLocais } from '@/data/mockData';
+import { carregarChecklists, deletarChecklist, salvarChecklist, normas, inicializarDadosLocais } from '@/data/mockData';
 
 export function ListarChecklists() {
   const [checklists, setChecklists] = useState([]);
@@ -128,8 +128,8 @@ export function ListarChecklists() {
               <SelectContent>
                 <SelectItem value="todas">Todas as categorias</SelectItem>
                 {categorias.map((categoria, index) => (
-                  <SelectItem key={`categoria-${index}`} value={categoria.nome}>
-                    {categoria.nome}
+                  <SelectItem key={`categoria-${index}`} value={categoria}>
+                    {categoria}
                   </SelectItem>
                 ))}
               </SelectContent>

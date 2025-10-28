@@ -8,7 +8,6 @@ import {
   Edit,
   FileText,
   Calendar,
-  User,
   CheckSquare,
   AlertCircle,
   Hash,
@@ -17,7 +16,7 @@ import {
   Star,
   Weight
 } from 'lucide-react';
-import { carregarChecklist, normas, categorias, Checklist } from '@/data/mockData';
+import { carregarChecklist, normas, Checklist } from '@/data/mockData';
 
 export function DetalhesChecklist() {
   const { id } = useParams<{ id: string }>();

@@ -11,13 +11,11 @@ import {
   AlertOctagon, 
   Camera, 
   FileText, 
-  Upload, 
   X, 
   Save, 
   Send,
   Loader2,
   Eye,
-  Download,
   Trash2
 } from 'lucide-react';
 
@@ -46,7 +44,6 @@ export function ExecucaoAuditoria() {
   const [respostas, setRespostas] = useState<Record<string, string | number | boolean>>({});
   const [fotos, setFotos] = useState<Foto[]>([]);
   const [evidencias, setEvidencias] = useState<Evidencia[]>([]);
-  const [loading, setLoading] = useState(false);
   const [salvandoRascunho, setSalvandoRascunho] = useState(false);
   const [finalizandoAuditoria, setFinalizandoAuditoria] = useState(false);
   
@@ -132,13 +129,13 @@ export function ExecucaoAuditoria() {
     }
   };
 
-  // Função para upload de foto
-  const handleUploadFoto = (perguntaId: string) => {
-    if (fileInputRef.current) {
-      fileInputRef.current.setAttribute('data-pergunta-id', perguntaId);
-      fileInputRef.current.click();
-    }
-  };
+  // Função para upload de foto (não implementada ainda)
+  // const handleUploadFoto = (perguntaId: string) => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.setAttribute('data-pergunta-id', perguntaId);
+  //     fileInputRef.current.click();
+  //   }
+  // };
 
   // Processar arquivo de foto selecionado
   const handleFotoSelecionada = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,7 +333,7 @@ export function ExecucaoAuditoria() {
       }
       
       // Remove auditoria existente se houver
-      auditorias = auditorias.filter((a: any) => a.id !== id);
+      auditorias = auditorias.filter((a: { id: string }) => a.id !== id);
       
       // Adiciona nova auditoria
       auditorias.push(auditoriaFinalizada);

@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDate, getStatusLabel, getPrioridadeLabel } from '@/utils/formatters';
-import { STATUS_COLORS, PRIORIDADE_COLORS, STATUS_AUDITORIA_OPTIONS, PRIORIDADE_OPTIONS } from '@/utils/constants';
+import { STATUS_COLORS, PRIORIDADE_COLORS, PRIORIDADE_OPTIONS } from '@/utils/constants';
 
 // Dados mockados para auditorias disponíveis para execução
 const auditoriasDisponiveis = [

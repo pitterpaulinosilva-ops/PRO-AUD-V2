@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, FileText, Download, Eye, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { carregarAuditoriaFinalizada, inicializarDadosLocais } from '@/data/mockData';
+import { carregarAuditoriaFinalizada, inicializarDadosLocais, Pergunta } from '@/data/mockData';
 
 interface Foto {
   id: string;
@@ -44,7 +44,7 @@ interface AuditoriaFinalizada {
   respostas: Resposta[];
   fotos: Foto[];
   evidencias: Evidencia[];
-  perguntas: any[];
+  perguntas: Pergunta[];
 }
 
 export function ResultadoAuditoria() {
@@ -54,32 +54,31 @@ export function ResultadoAuditoria() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Inicializar dados locais se necessário
+    const carregarResultadoAuditoria = (auditoriaId: string) => {
+      try {
+        const auditoriaEncontrada = carregarAuditoriaFinalizada(auditoriaId);
+        
+        if (auditoriaEncontrada) {
+          setAuditoria(auditoriaEncontrada);
+        } else {
+          toast.error('Auditoria não encontrada');
+          navigate('/auditorias');
+        }
+      } catch (error) {
+        console.error('Erro ao carregar auditoria:', error);
+        toast.error('Erro ao carregar dados da auditoria');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     inicializarDadosLocais();
-    
     if (id) {
       carregarResultadoAuditoria(id);
     }
-  }, [id]);
+  }, [id, navigate]);
 
-  const carregarResultadoAuditoria = (auditoriaId: string) => {
-    try {
-      const auditoriaEncontrada = carregarAuditoriaFinalizada(auditoriaId);
-      
-      if (auditoriaEncontrada) {
-        setAuditoria(auditoriaEncontrada);
-      } else {
-        toast.error('Auditoria não encontrada');
-        navigate('/execucao');
-      }
-    } catch (error) {
-      console.error('Erro ao carregar resultado da auditoria:', error);
-      toast.error('Erro ao carregar resultado da auditoria');
-      navigate('/execucao');
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const getStatusColor = (score: number) => {
     if (score >= 80) return 'bg-green-500';
@@ -222,7 +221,7 @@ export function ResultadoAuditoria() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900 mb-1">
-                        {index + 1}. {pergunta.texto}
+                        {index + 1}. {String(pergunta.texto)}
                       </h3>
                       {pergunta.obrigatoria && (
                         <Badge variant="outline" className="text-xs">

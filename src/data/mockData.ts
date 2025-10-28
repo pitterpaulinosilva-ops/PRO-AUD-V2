@@ -30,16 +30,16 @@ export interface Checklist {
 }
 
 export interface Pergunta {
-  id: string;
+  id?: string;
   texto: string;
   tipo: 'multipla_escolha' | 'sim_nao' | 'texto_livre' | 'numerica' | 'data' | 'arquivo' | 'avaliacao' | 'conformidade';
   obrigatoria: boolean;
-  peso: number;
-  categoria: string;
+  peso?: number;
+  categoria?: string;
   opcoes?: string[];
   valor_minimo?: number;
   valor_maximo?: number;
-  permite_evidencia: boolean;
+  permite_evidencia?: boolean;
   observacoes?: string;
 }
 
@@ -168,8 +168,10 @@ export const checklists: Checklist[] = [
     id: '1',
     nome: 'Auditoria de Segurança do Trabalho',
     descricao: 'Checklist para auditoria de segurança e saúde ocupacional',
+    norma_id: '1',
     categoria: 'Segurança',
     versao: '2.1',
+    ativo: true,
     status: 'ativo',
     dataCreacao: '2024-01-15',
     ultimaAtualizacao: '2024-02-10',
@@ -191,11 +193,11 @@ export const checklists: Checklist[] = [
       {
         id: 'p3',
         texto: 'Quantos extintores foram verificados?',
-        tipo: 'numerico',
+        tipo: 'numerica',
         obrigatoria: false,
         categoria: 'Equipamentos',
-        valorMinimo: 0,
-        valorMaximo: 50
+        valor_minimo: 0,
+        valor_maximo: 50
       },
       {
         id: 'p4',
@@ -217,8 +219,10 @@ export const checklists: Checklist[] = [
     id: '2',
     nome: 'Auditoria de Qualidade ISO 9001',
     descricao: 'Checklist baseado nos requisitos da ISO 9001:2015',
+    norma_id: '2',
     categoria: 'Qualidade',
     versao: '1.5',
+    ativo: true,
     status: 'ativo',
     dataCreacao: '2024-01-20',
     ultimaAtualizacao: '2024-02-05',
@@ -240,11 +244,11 @@ export const checklists: Checklist[] = [
       {
         id: 'q3',
         texto: 'Quantas não conformidades foram identificadas no último mês?',
-        tipo: 'numerico',
+        tipo: 'numerica',
         obrigatoria: false,
         categoria: 'Não Conformidades',
-        valorMinimo: 0,
-        valorMaximo: 100
+        valor_minimo: 0,
+        valor_maximo: 100
       }
     ]
   }
@@ -582,7 +586,7 @@ export const deletarChecklist = (id: string): boolean => {
   const checklistsSalvos = localStorage.getItem('checklists');
   
   if (checklistsSalvos) {
-    let checklists: Checklist[] = JSON.parse(checklistsSalvos);
+    const checklists: Checklist[] = JSON.parse(checklistsSalvos);
     const checklistIndex = checklists.findIndex(c => c.id === id);
     
     if (checklistIndex !== -1) {
@@ -639,7 +643,7 @@ export const deletarAuditoria = (id: string): boolean => {
   const auditoriasSalvas = localStorage.getItem('auditorias');
   
   if (auditoriasSalvas) {
-    let auditorias: Auditoria[] = JSON.parse(auditoriasSalvas);
+    const auditorias: Auditoria[] = JSON.parse(auditoriasSalvas);
     const auditoriaIndex = auditorias.findIndex(a => a.id === id);
     
     if (auditoriaIndex !== -1) {

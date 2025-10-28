@@ -32,14 +32,13 @@ import {
   Star,
   Calendar,
   FileText,
-  Weight,
   AlertCircle
 } from 'lucide-react';
 import { carregarChecklist, salvarChecklist, normas, categorias, Checklist, Pergunta } from '@/data/mockData';
 
 // Schema para pergunta
 const perguntaSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   texto: z.string().min(1, 'Texto da pergunta é obrigatório'),
   tipo: z.enum(['sim_nao', 'multipla_escolha', 'texto_livre', 'numerica', 'data', 'arquivo', 'avaliacao', 'conformidade']),
   obrigatoria: z.boolean(),
@@ -139,7 +138,7 @@ export function EditarChecklist() {
   const handleTipoChange = (index: number, novoTipo: string) => {
     const perguntas = form.getValues('perguntas');
     const perguntaAtualizada = { ...perguntas[index] };
-    perguntaAtualizada.tipo = novoTipo as any;
+    perguntaAtualizada.tipo = novoTipo as 'sim_nao' | 'multipla_escolha' | 'texto_livre' | 'numerica' | 'data' | 'arquivo' | 'avaliacao' | 'conformidade';
     
     // Configurar opções baseadas no tipo
     if (novoTipo === 'conformidade') {
@@ -359,9 +358,9 @@ export function EditarChecklist() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categorias.map((categoria) => (
-                            <SelectItem key={categoria.id} value={categoria.nome}>
-                              {categoria.nome}
+                          {categorias.map((categoria, index) => (
+                            <SelectItem key={index} value={categoria}>
+                              {categoria}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -504,9 +503,9 @@ export function EditarChecklist() {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {categorias.map((categoria) => (
-                                      <SelectItem key={categoria.id} value={categoria.nome}>
-                                        {categoria.nome}
+                                    {categorias.map((categoria, index) => (
+                                      <SelectItem key={index} value={categoria}>
+                                        {categoria}
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
