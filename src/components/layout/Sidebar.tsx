@@ -9,7 +9,6 @@ import {
   PlayCircle,
   AlertOctagon,
   Settings,
-  User,
   Home,
   X,
   ChevronLeft,
@@ -197,9 +196,9 @@ export const Sidebar = React.memo(() => {
           </ul>
         </nav>
 
-        {/* Collapse button */}
-        {!isCollapsed && (
-          <div className="flex-shrink-0 p-4 border-t border-gray-200">
+        {/* Toggle button - Collapse/Expand */}
+        <div className="flex-shrink-0 p-4 border-t border-gray-200">
+          {!isCollapsed ? (
             <button
               onClick={collapse}
               className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-md hover:bg-gray-100 transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -207,8 +206,16 @@ export const Sidebar = React.memo(() => {
               <ChevronLeft className="w-4 h-4 mr-2 transition-all duration-200 ease-in-out" />
               Recolher
             </button>
-          </div>
-        )}
+          ) : (
+            <button
+              onClick={expand}
+              className="flex items-center justify-center w-full px-2 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-md hover:bg-gray-100 transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              title="Expandir sidebar"
+            >
+              <ChevronRight className="w-4 h-4 transition-all duration-200 ease-in-out" />
+            </button>
+          )}
+        </div>
       </div>
     );
   }

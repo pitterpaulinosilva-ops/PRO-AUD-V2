@@ -20,8 +20,6 @@ import {
   Clock3,
   CheckCircle2,
   AlertOctagon,
-
-  CalendarPlus,
   ArrowRight
 } from 'lucide-react';
 
